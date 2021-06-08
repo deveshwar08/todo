@@ -1,0 +1,22 @@
+#clock-calendar {
+    height : 250px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+#clock-area {  
+    width : 40%;
+    display: flex;
+    flex-wrap: wrap; 
+}
+#time {
+    background-color: black;
+    height : 50px;
+    color : green;
+    font-size: xx-large;
+    text-align: center;
+    padding-top: 10px;
+}
+#calendar-area {
+    width: 60%;
+}
