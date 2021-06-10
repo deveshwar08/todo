@@ -2,6 +2,10 @@
 <html lang = "en">
     <head>
         <link href="css/style.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link href='https://fonts.googleapis.com/css?family=Orbitron' rel='stylesheet' type='text/css'>
+
+
         <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
         <meta content="utf-8" http-equiv="encoding">
 
@@ -12,12 +16,33 @@
         <div id="clock-calendar">
             
             <div id="clock-area">
-                <span style="width: 20%;"></span>
-                <div id="time"></div>         
-
+                <div id="time" style="font-family: 'Orbitron', sans-serif;"></div>       
             </div>
-            <div id = "calendar-area">
+            <div id = "calendar-area" class="container">
+                <div>
+                    <h3 id="month"></h3>
+                </div>
+                <div id="previousnext">
+                    <button class="btn btn-primary col-sm-6" id="previous" onclick="previous()"> &lt; </button>
+                    <button class="btn btn-primary col-sm-6" id="next" onclick="next()"> &gt; </button>
+                </div>
+                <div>
+                    <h5 id="year"></h5>
+                </div>
+                <table class="table table-dark table-striped table-responsive-sm" id="calendar">
+                    <thead class="thead-light">
+                        <th>Sun</th>
+                        <th>Mon</th>
+                        <th>Tue</th>
+                        <th>Wed</th>
+                        <th>Thu</th>
+                        <th>Fri</th>
+                        <th>Sat</th>
+                    </thead>
+                    <tbody id="calendar-body">
 
+                    </tbody>
+                </table>
             </div>
         </div>
         <div id="todo-list">

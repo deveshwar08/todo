@@ -1,8 +1,8 @@
 #clock-calendar {
-    height : 250px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    height: 250px;
 }
 #clock-area {  
     width : 40%;
@@ -10,13 +10,23 @@
     flex-wrap: wrap; 
 }
 #time {
+    margin-top: 100px;
+    margin-left: 50px;
     background-color: black;
-    height : 50px;
+    height : 150px;
     color : green;
-    font-size: xx-large;
+    font-size: 80px;
     text-align: center;
     padding-top: 10px;
 }
 #calendar-area {
     width: 60%;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
+#previousnext {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
 }
