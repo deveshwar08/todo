@@ -1,26 +1,31 @@
+body {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
 #clock-calendar {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    height: 50%;
+    height: 70vh;
 }
 #clock-area {  
-    width : 40%;
+    width : 40vw;
     display: flex;
     flex-wrap: wrap; 
 }
 #time {
-    margin-top: 10%;
-    margin-left: 5%;
-    height : 15%;
+    margin-top: 20vh;
+    margin-left: 3vw;
+    height : 15vh;
     color : green;
     justify-content: space-evenly;
-    font-size: 15vh;
+    font-size: 6vw ;
     text-align: center;
-    padding-top: 5%;
+    padding-top: 5vh;
 }
 #calendar-area {
-    width: 60%;
+    width: 60vw;
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
@@ -48,4 +53,14 @@ ul {
 span {
     align-content: flex-end;
     text-align: right;
+}
+@media (max-width: 480px)
+{
+    #time {
+        margin-top: 10vh;
+        padding-top: 2vh;
+    }
+    #clock-calendar {
+        height : 40vh;
+    }
 }
