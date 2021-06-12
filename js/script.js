@@ -18,6 +18,36 @@ function startTime() {
     }, 500);
 
 }
+function addTodo(date,month,year,todo)
+{
+    let ul = document.getElementById("todo-list");
+    let li = document.createElement("LI");
+    li.classList.add("text-dark");
+    li.classList.add("bg-light");
+    li.classList.add("list-group-item");
+    li.classList.add("d-flex");
+    li.classList.add("justify-content-between");
+    li.classList.add("align-items-center");
+    let todoText = document.createTextNode(todo);
+    let deadline = date + "/" + months[month] + "/" + year;
+    let span = document.createElement("span");
+    span.classList.add("badge");
+    span.classList.add("badge-pill");
+    span.classList.add("badge-danger");
+    let deadlineText = document.createTextNode(deadline);
+    span.appendChild(deadlineText);
+    li.appendChild(todoText);
+    li.appendChild(span);
+    ul.appendChild(li);
+}
+function dateClick(element)
+{
+    let todoDate = element.getAttribute("value");
+    let todoMonth = currentMonth;
+    let todoYear = currentYear;
+    let todo = window.prompt("Hey!What's on this day?");
+    addTodo(todoDate,todoMonth,todoYear,todo);
+}
 function displayCalendar(month, year) {
     let tbody = document.getElementById("calendar-body");
     tbody.innerHTML = "";
@@ -50,7 +80,8 @@ function displayCalendar(month, year) {
                     let dateCell = document.createElement("td");
                     let cellText = document.createTextNode(date);
                     dateCell.appendChild(cellText);
-                    dateCell.setAttribute("onclick","addTodo(date,month,year)")
+                    dateCell.setAttribute("value",date);
+                    dateCell.setAttribute("onclick","dateClick(this)")
                     weekRow.appendChild(dateCell);
                     if (date === today.getDate() && year === today.getFullYear() && month === today.getMonth()) 
                     {
@@ -66,6 +97,7 @@ function displayCalendar(month, year) {
         tbody.appendChild(weekRow);      
     }
 }
+
 function next() {
     currentYear = (currentMonth === 11) ? currentYear + 1 : currentYear;
     currentMonth = (currentMonth + 1);
@@ -74,7 +106,7 @@ function next() {
     displayCalendar(currentMonth, currentYear);
 }
 
-function previous() {
+function back() {
     currentYear = (currentMonth === 0) ? currentYear - 1 : currentYear;
     currentMonth = (currentMonth === 0) ? 11 : currentMonth - 1;
     displayCalendar(currentMonth, currentYear);
