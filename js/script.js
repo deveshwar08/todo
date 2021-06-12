@@ -27,7 +27,7 @@ function addTodo(date,month,year,todo)
     li.classList.add("list-group-item");
     li.classList.add("d-flex");
     li.classList.add("justify-content-between");
-    li.classList.add("align-items-center");
+    //li.classList.add("align-items-center");
     let todoText = document.createTextNode(todo);
     let deadline = date + "/" + months[month] + "/" + year;
     let span = document.createElement("span");

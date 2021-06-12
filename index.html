@@ -5,51 +5,52 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <link href='https://fonts.googleapis.com/css?family=Orbitron' rel='stylesheet' type='text/css'>
 
-
+        <meta content="width=device-width, initial-scale=1" name="viewport" />
         <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
         <meta content="utf-8" http-equiv="encoding">
 
         <title>Plan it right</title>
     </head>
     <body class="bg-dark text-light">
-        <div id="clock-calendar">
-            
-            <div id="clock-area">
-                <div id="time" style="font-family: 'Orbitron', sans-serif;"></div>       
-            </div>
-            <div id = "calendar-area" class="container">
-                <div>
-                    <h3 id="month" class="text-success" style="text-align: center;"></h3>
+        <div class="workspace">
+            <div id="clock-calendar">            
+                <div id="clock-area">
+                <div id="time" style="font-family: 'Orbitron', sans-serif;"></div>
                 </div>
-                <div id="previousnext">
-                    <button class="btn btn-primary col-sm-6" id="previous" onclick="back()"> &lt; </button>
-                    <button class="btn btn-primary col-sm-6" id="next" onclick="next()"> &gt; </button>
-                </div>
-                <div>
-                    <h5 id="year" class="text-success" style="text-align: center;"></h5>
-                </div>
-                <table class="table table-dark table-striped table-responsive-sm" id="calendar">
-                    <thead class="thead-light">
-                        <th>S</th>
-                        <th>M</th>
-                        <th>T</th>
-                        <th>W</th>
-                        <th>T</th>
-                        <th>F</th>
-                        <th>S</th>
-                    </thead>
-                    <tbody id="calendar-body">
+                <div id = "calendar-area" class="container">
+                    <div>
+                        <h3 id="month" class="text-success" style="text-align: center;"></h3>
+                    </div>
+                    <div id="previousnext">
+                        <button class="btn btn-primary col-sm-6" id="previous" onclick="back()"> &lt; </button>
+                        <button class="btn btn-primary col-sm-6" id="next" onclick="next()"> &gt; </button>
+                    </div>
+                    <div>
+                        <h5 id="year" class="text-success" style="text-align: center;"></h5>
+                    </div>
+                    <table class="table table-dark table-striped table-responsive-xxl" id="calendar">
+                        <thead class="thead-light">
+                            <th>S</th>
+                            <th>M</th>
+                            <th>T</th>
+                            <th>W</th>
+                            <th>T</th>
+                            <th>F</th>
+                            <th>S</th>
+                        </thead>
+                        <tbody id="calendar-body">
 
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="todo">
+                <h3>To-Do</h3>
+                <ul id="todo-list" class="list-group">
+
+                </ul>
             </div>
         </div>
-        <div id="todo">
-            <h3>To-Do</h3>
-            <ul id="todo-list" class="list-group">
-
-            </ul>
-        </div>
-    <script src="js/script.js"></script>
+        <script src="js/script.js"></script>
     </body>
 </html>

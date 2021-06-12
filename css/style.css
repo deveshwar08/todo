@@ -1,4 +1,4 @@
-body {
+.workspace {
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
@@ -10,25 +10,18 @@ body {
     height: 70vh;
 }
 #clock-area {  
-    width : 40vw;
-    display: flex;
-    flex-wrap: wrap; 
+    width : 35vw;
 }
 #time {
     margin-top: 20vh;
-    margin-left: 3vw;
     height : 15vh;
     color : green;
-    justify-content: space-evenly;
-    font-size: 6vw ;
+    font-size: 80px ;
     text-align: center;
     padding-top: 5vh;
 }
 #calendar-area {
-    width: 60vw;
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: column;
+    width: 55vw;
 }
 #previousnext {
     display: flex;
@@ -41,26 +34,42 @@ th {
 td {
     text-align: center;
 }
-li {
-    list-style: none;
-    height: 50px;
-}
 ul {
     display:flex;
     flex-wrap: wrap;
     flex-direction: column;
 }
 span {
-    align-content: flex-end;
     text-align: right;
 }
-@media (max-width: 480px)
+@media only screen and (max-width: 480px)
 {
-    #time {
-        margin-top: 10vh;
-        padding-top: 2vh;
-    }
+    
     #clock-calendar {
-        height : 40vh;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        height: 120vh
+    }
+    #clock-area {
+        width: 100vw;
+        height: 20vh;
+    }
+    #calendar-area {
+        width: 100vw;
+        height: 65vh;
+    }
+    #time {
+        margin-top: 5vh;
+        font-size: 30px;
+    }
+    table {
+        width: 95vw;
+    }
+    thead {
+        width: 95vw;
+    }
+    tbody {
+        width: 95vw;
     }
 }
