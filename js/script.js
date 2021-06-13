@@ -66,8 +66,17 @@ function displayTodo()
             span.classList.add("badge-danger");
             let deadlineText = document.createTextNode(deadline);
             span.appendChild(deadlineText);
+            let deleteBtn = document.createElement("button");
+            let deleteText = document.createTextNode("Delete");
+            deleteBtn.classList.add("btn");
+            deleteBtn.classList.add("btn-danger");
+            deleteBtn.classList.add("btn-sm");
+            deleteBtn.appendChild(deleteText);
+            let div = document.createElement("div");
+            div.appendChild(span);
+            div.appendChild(deleteBtn);
             li.appendChild(todoText);
-            li.appendChild(span);
+            li.appendChild(div);
             ul.appendChild(li); 
         });
     }    
@@ -114,7 +123,7 @@ function displayCalendar(month, year) {
                     let cellText = document.createTextNode(date);
                     dateCell.appendChild(cellText);
                     dateCell.setAttribute("value",date);
-                    dateCell.setAttribute("onclick","dateClick(this)")
+                    dateCell.setAttribute("onclick","dateClick(this)");
                     weekRow.appendChild(dateCell);
                     if (date === today.getDate() && year === today.getFullYear() && month === today.getMonth()) 
                     {

@@ -39,8 +39,9 @@ ul {
     flex-wrap: wrap;
     flex-direction: column;
 }
-span {
-    text-align: right;
+#todo-list li div span {
+    margin-top: 5px;
+    padding: 10px;
 }
 @media only screen and (max-width: 480px)
 {
