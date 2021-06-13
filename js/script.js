@@ -20,17 +20,7 @@ function startTime() {
     }, 500);
 
 }
-function addTodo(date,month,year,todo)
-{
-    let retrievedTodo = JSON.parse(localStorage.getItem("Todo"));
-    let tempTodo = [];
-    for(let i = 0;i < retrievedTodo.length;i++)
-        tempTodo[i] = retrievedTodo[i].slice();
-    tempTodo.push([year,month,date,todo]);
-    localStorage.removeItem("Todo");
-    localStorage.setItem("Todo",JSON.stringify(tempTodo));
-    displayTodo();
-}
+
 function displayTodo()
 {
     let ul = document.getElementById("todo-list");
@@ -42,6 +32,7 @@ function displayTodo()
         let tempTodo = [];
         for(let i = 0;i < retrievedTodo.length;i++)
             tempTodo[i] = retrievedTodo[i].slice();
+        //console.log(tempTodo);
         tempTodo.sort(function(a,b) {
             if(a[0] != b[0])
                 return a[0] - b[0];
@@ -71,6 +62,7 @@ function displayTodo()
             deleteBtn.classList.add("btn");
             deleteBtn.classList.add("btn-danger");
             deleteBtn.classList.add("btn-sm");
+            deleteBtn.setAttribute("onclick","deleteTodo(this)");
             deleteBtn.appendChild(deleteText);
             let div = document.createElement("div");
             div.appendChild(span);
@@ -90,6 +82,39 @@ function dateClick(element)
     if(todo != "")
         addTodo(todoDate,todoMonth,todoYear,todo);
 }
+function addTodo(date,month,year,todo)
+{
+    let retrievedTodo = JSON.parse(localStorage.getItem("Todo"));
+    let tempTodo = [];
+    for(let i = 0;i < retrievedTodo.length;i++)
+        tempTodo[i] = retrievedTodo[i].slice();
+    tempTodo.push([year,month,date,todo]);
+    localStorage.removeItem("Todo");
+    localStorage.setItem("Todo",JSON.stringify(tempTodo));
+    displayTodo();
+}
+
+function deleteTodo(element)
+{
+    let retrievedTodo = JSON.parse(localStorage.getItem("Todo"));
+    let tempTodo = [];
+    for(let i = 0;i < retrievedTodo.length;i++)
+        tempTodo[i] = retrievedTodo[i].slice();
+    let deleteDeadline = element.parentElement.children[0].childNodes[0].data.split("/");
+    let deleteDeadlineDate = deleteDeadline[0];
+    let deleteDeadlineMonth = months.indexOf(String(deleteDeadline[1]));
+    let deleteDeadlineYear = parseInt(deleteDeadline[2]);
+    let deleteTodoText = element.parentElement.parentElement.childNodes[0].data;
+    for(let i = 0;i < tempTodo.length;i++)
+    {
+        if(tempTodo[i][0] == deleteDeadlineYear && tempTodo[i][1] == deleteDeadlineMonth && tempTodo[i][2] == deleteDeadlineDate && tempTodo[i][3] == deleteTodoText)
+            tempTodo.splice(i,1);
+    }
+    localStorage.removeItem("Todo");
+    localStorage.setItem("Todo",JSON.stringify(tempTodo));    
+    displayTodo();
+}
+
 function displayCalendar(month, year) {
     let tbody = document.getElementById("calendar-body");
     tbody.innerHTML = "";
@@ -153,6 +178,7 @@ function back() {
     currentMonth = (currentMonth === 0) ? 11 : currentMonth - 1;
     displayCalendar(currentMonth, currentYear);
 }
+
 startTime();
 displayCalendar(currentMonth, currentYear);
 displayTodo();

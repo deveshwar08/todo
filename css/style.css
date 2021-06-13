@@ -39,6 +39,10 @@ ul {
     flex-wrap: wrap;
     flex-direction: column;
 }
+#todo-list li {
+    margin: 5px;
+    padding-top: 15px;
+}
 #todo-list li div span {
     margin-top: 5px;
     padding: 10px;
