@@ -3,6 +3,8 @@ let today = new Date();
 let currentMonth = today.getMonth();
 let currentYear = today.getFullYear();
 
+let defaultTodo = [];
+
 function startTime() {
     let today = new Date();
     let h = today.getHours();
@@ -20,25 +22,55 @@ function startTime() {
 }
 function addTodo(date,month,year,todo)
 {
+    let retrievedTodo = JSON.parse(localStorage.getItem("Todo"));
+    let tempTodo = [];
+    for(let i = 0;i < retrievedTodo.length;i++)
+        tempTodo[i] = retrievedTodo[i].slice();
+    tempTodo.push([year,month,date,todo]);
+    localStorage.removeItem("Todo");
+    localStorage.setItem("Todo",JSON.stringify(tempTodo));
+    displayTodo();
+}
+function displayTodo()
+{
     let ul = document.getElementById("todo-list");
-    let li = document.createElement("LI");
-    li.classList.add("text-dark");
-    li.classList.add("bg-light");
-    li.classList.add("list-group-item");
-    li.classList.add("d-flex");
-    li.classList.add("justify-content-between");
-    //li.classList.add("align-items-center");
-    let todoText = document.createTextNode(todo);
-    let deadline = date + "/" + months[month] + "/" + year;
-    let span = document.createElement("span");
-    span.classList.add("badge");
-    span.classList.add("badge-pill");
-    span.classList.add("badge-danger");
-    let deadlineText = document.createTextNode(deadline);
-    span.appendChild(deadlineText);
-    li.appendChild(todoText);
-    li.appendChild(span);
-    ul.appendChild(li);
+    ul.innerHTML = "";
+    if(localStorage.getItem("Todo") == null)
+        localStorage.setItem("Todo",JSON.stringify(defaultTodo));
+    else{
+        let retrievedTodo = JSON.parse(localStorage.getItem("Todo"));
+        let tempTodo = [];
+        for(let i = 0;i < retrievedTodo.length;i++)
+            tempTodo[i] = retrievedTodo[i].slice();
+        tempTodo.sort(function(a,b) {
+            if(a[0] != b[0])
+                return a[0] - b[0];
+            else if(a[1] != b[1])
+                return a[1] - b[1];
+            else
+                return a[2] - b[2];
+        });
+        tempTodo.forEach(arr => {
+            let li = document.createElement("LI");
+            li.classList.add("text-dark");
+            li.classList.add("bg-light");
+            li.classList.add("list-group-item");
+            li.classList.add("d-flex");
+            li.classList.add("justify-content-between");
+            //li.classList.add("align-items-center");
+            let todoText = document.createTextNode(arr[3]);
+            let deadline = arr[2] + "/" + months[arr[1]] + "/" + arr[0];
+            let span = document.createElement("span");
+            span.classList.add("badge");
+            span.classList.add("badge-pill");
+            span.classList.add("badge-danger");
+            let deadlineText = document.createTextNode(deadline);
+            span.appendChild(deadlineText);
+            li.appendChild(todoText);
+            li.appendChild(span);
+            ul.appendChild(li); 
+        });
+    }    
 }
 function dateClick(element)
 {
@@ -46,7 +78,8 @@ function dateClick(element)
     let todoMonth = currentMonth;
     let todoYear = currentYear;
     let todo = window.prompt("Hey!What's on this day?");
-    addTodo(todoDate,todoMonth,todoYear,todo);
+    if(todo != "")
+        addTodo(todoDate,todoMonth,todoYear,todo);
 }
 function displayCalendar(month, year) {
     let tbody = document.getElementById("calendar-body");
@@ -113,3 +146,4 @@ function back() {
 }
 startTime();
 displayCalendar(currentMonth, currentYear);
+displayTodo();
