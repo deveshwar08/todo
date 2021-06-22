@@ -13,9 +13,18 @@
     </head>
     <body class="bg-dark text-light">
         <div class="workspace">
-            <div id="clock-calendar">            
-                <div id="clock-area">
-                <div id="time" style="font-family: 'Orbitron', sans-serif;"></div>
+            <div id="clock-calendar"> 
+                <div>
+                    <input  type="radio" name="clock-type" id="analogue" onchange="toggleClockType()">
+                    <label  for="Analogue">
+                        Analogue
+                    </label>
+                    <input  type="radio" name="clock-type" id="digital" onchange="toggleClockType()" checked>
+                    <label  for="digital">
+                        Digital
+                    </label>
+                    <div id="clock-area">
+                    </div>
                 </div>
                 <div id = "calendar-area" class="container">
                     <div>

@@ -2,7 +2,10 @@ let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oc
 let today = new Date();
 let currentMonth = today.getMonth();
 let currentYear = today.getFullYear();
-
+let clockType = "digital";
+let digitalDiv = '<div id="time" style="font-family: \'Orbitron\', sans-serif;"></div>';
+let analogueDiv = '<div id="analogue-clock"><canvas id="analogue-canvas" width="400px" height="400px"></canvas></div>';
+document.getElementById("clock-area").innerHTML = digitalDiv;
 let defaultTodo = [];
 
 function startTime() {
@@ -10,15 +13,102 @@ function startTime() {
     let h = today.getHours();
     let m = today.getMinutes();
     let s = today.getSeconds();
-    h = h < 10 ? "0"+h : h;
-    m = m < 10 ? "0"+m : m;
-    s = s < 10 ? "0"+s : s;
-    displayTime = h + ":" + m + ":" + s;
-    document.getElementById('time').innerHTML = displayTime;
-    t = setTimeout(function() {
+    
+    if(clockType == "digital"){
+        h = h < 10 ? "0"+h : h;
+        m = m < 10 ? "0"+m : m;
+        s = s < 10 ? "0"+s : s;
+        let displayTime = h + ":" + m + ":" + s;
+        document.getElementById('time').innerHTML = displayTime;
+    }
+    else if(clockType == "analogue")
+        drawClock(h,m,s);    
+    
+    setTimeout(function() {
         startTime()
     }, 500);
 
+}
+
+function drawClockArea(){
+    let canvas  = document.getElementById("analogue-canvas");
+    let c = canvas.getContext("2d");
+    let clockRadius = canvas.height / 2; 
+    c.translate(clockRadius,clockRadius);
+    clockRadius = clockRadius * 0.9;
+}
+function drawClock(h,m,s){
+    let canvas  = document.getElementById("analogue-canvas");
+    let c = canvas.getContext("2d");
+    let clockRadius = canvas.height / 2;
+    drawFace(c,clockRadius);
+    drawNumbers(c,clockRadius);
+    drawTime(c,clockRadius,h,m,s);   
+}
+function drawFace(c,clockRadius){
+
+    c.beginPath();
+    c.arc(0, 0, clockRadius, 0, Math.PI * 2);
+    c.fillStyle = "white";
+    c.fill();
+    c.fillStyle = "#333";
+}
+
+function drawNumbers(c,clockRadius){
+    c.font = clockRadius * 0.15 + "px sans-sherif";
+    c.textBaseline = "middle";
+    c.textAlign = "center";
+    for(let num = 1; num < 13; num++){
+        let ang = num * Math.PI / 6;
+        c.rotate(ang);
+        c.translate(0, -clockRadius * 0.85);
+        c.rotate(-ang);
+        c.fillText(num.toString(), 0, 0);
+        c.rotate(ang);
+        c.translate(0, clockRadius * 0.85);
+        c.rotate(-ang);
+    }
+}
+
+function drawTime(c,clockRadius,h,m,s){
+
+    let hour = h;
+    let minute = m;
+    let second = s;
+    hour = hour % 12;
+    hour = (hour*Math.PI/6)+(minute*Math.PI/(6*60))+(second*Math.PI/(360*60));
+    drawHand(c, hour, clockRadius*0.5, clockRadius*0.07);
+    minute = (minute*Math.PI/30)+(second*Math.PI/(30*60));
+    drawHand(c, minute, clockRadius*0.8, clockRadius*0.07);
+    second = (second*Math.PI/30);
+    drawHand(c, second, clockRadius*0.9, clockRadius*0.02);
+}
+
+
+
+function drawHand(c, pos, len, wid) {
+    c.beginPath();
+    c.lineWidth = wid;
+    c.lineCap = "round";
+    c.moveTo(0,0);
+    c.rotate(pos);
+    c.lineTo(0, -len);
+    c.stroke();
+    c.rotate(-pos);
+}
+
+function toggleClockType(){
+    if(clockType == "digital")
+    {
+        clockType = "analogue";
+        document.getElementById("clock-area").innerHTML = analogueDiv;
+        drawClockArea();
+    }
+    else if(clockType == "analogue")
+    {
+        clockType = "digital";
+        document.getElementById("clock-area").innerHTML = digitalDiv;
+    }
 }
 
 function displayTodo()
@@ -79,7 +169,7 @@ function dateClick(element)
     let todoMonth = currentMonth;
     let todoYear = currentYear;
     let todo = window.prompt("Hey!What's on this day?");
-    if(todo != "")
+    if(todo != "" && todo !== null)
         addTodo(todoDate,todoMonth,todoYear,todo);
 }
 function addTodo(date,month,year,todo)
@@ -178,7 +268,6 @@ function back() {
     currentMonth = (currentMonth === 0) ? 11 : currentMonth - 1;
     displayCalendar(currentMonth, currentYear);
 }
-
 startTime();
 displayCalendar(currentMonth, currentYear);
 displayTodo();
