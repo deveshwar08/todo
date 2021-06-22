@@ -111,10 +111,50 @@ function toggleClockType(){
     }
 }
 
+function checkTodayTodo(){
+    let today = new Date();
+    let currentMonth = today.getMonth();
+    let currentYear = today.getFullYear();
+    let retrievedTodo = JSON.parse(localStorage.getItem("Todo"));
+    let tempTodo = [];
+    let flag = 0;
+    for(let i = 0;i < retrievedTodo.length;i++)
+        tempTodo[i] = retrievedTodo[i].slice();
+    tempTodo.forEach(arr => {
+        if(today.getUTCDate() == parseInt(arr[2]) && currentMonth == arr[1] && currentYear == arr[0])
+            flag++;
+    });
+    if(flag > 0)
+        return true;
+    else
+        return false;
+}
+
 function displayTodo()
 {
-    let ul = document.getElementById("todo-list");
-    ul.innerHTML = "";
+    document.getElementById("todo").innerHTML = "";
+    let today = new Date();
+    let currentMonth = today.getMonth();
+    let currentYear = today.getFullYear();
+    let ul = document.createElement("ul");
+    ul.setAttribute("id","todo-list");
+    ul.classList.add("list-group");
+    let h3 = document.createElement("h3");
+    let todoHeading = document.createTextNode("To-Do");
+    h3.appendChild(todoHeading);
+    let ulToday = document.createElement("ul");
+    ulToday.setAttribute("id","today-todo-list");
+    ulToday.classList.add("list-group");
+    let h3Today = document.createElement("h3");
+    let todoTodayHeading = document.createTextNode("Today's To-Do");
+    h3Today.appendChild(todoTodayHeading);
+    if(checkTodayTodo() == true)
+    {
+        document.getElementById("todo").appendChild(h3Today);
+        document.getElementById("todo").appendChild(ulToday);
+    }
+    document.getElementById("todo").appendChild(h3);
+    document.getElementById("todo").appendChild(ul);
     if(localStorage.getItem("Todo") == null)
         localStorage.setItem("Todo",JSON.stringify(defaultTodo));
     else{
@@ -140,6 +180,7 @@ function displayTodo()
             li.classList.add("justify-content-between");
             //li.classList.add("align-items-center");
             let todoText = document.createTextNode(arr[3]);
+            let p = document.createElement("p");
             let deadline = arr[2] + "/" + months[arr[1]] + "/" + arr[0];
             let span = document.createElement("span");
             span.classList.add("badge");
@@ -157,9 +198,69 @@ function displayTodo()
             let div = document.createElement("div");
             div.appendChild(span);
             div.appendChild(deleteBtn);
-            li.appendChild(todoText);
+            if(arr[4] === true)
+            {
+                let s = document.createElement("s");
+                p.appendChild(s);
+                s.appendChild(todoText);
+            }
+            else if(arr[4] === false)
+            {
+                p.appendChild(todoText);
+                let completedBtn = document.createElement("button");
+                let completedText = document.createTextNode("Complete");
+                completedBtn.classList.add("btn");
+                completedBtn.classList.add("btn-success");
+                completedBtn.classList.add("btn-sm");
+                completedBtn.setAttribute("onclick","completedTodo(this)");
+                completedBtn.appendChild(completedText);
+                div.appendChild(completedBtn);
+            }
+            li.appendChild(p);
             li.appendChild(div);
-            ul.appendChild(li); 
+            ul.appendChild(li);
+            if(today.getUTCDate() == parseInt(arr[2]) && currentMonth == arr[1] && currentYear == arr[0])
+            {
+                let li = document.createElement("LI");
+                li.classList.add("text-dark");
+                li.classList.add("bg-light");
+                li.classList.add("list-group-item");
+                li.classList.add("d-flex");
+                li.classList.add("justify-content-between");
+                //li.classList.add("align-items-center");
+                let todoText = document.createTextNode(arr[3]);
+                let p = document.createElement("p");
+                let deleteBtn = document.createElement("button");
+                let deleteText = document.createTextNode("Delete");
+                deleteBtn.classList.add("btn");
+                deleteBtn.classList.add("btn-danger");
+                deleteBtn.classList.add("btn-sm");
+                deleteBtn.setAttribute("onclick","deleteTodayTodo(this)");
+                deleteBtn.appendChild(deleteText);
+                let div = document.createElement("div");
+                div.appendChild(deleteBtn);
+                if(arr[4] === true)
+                {
+                    let s = document.createElement("s");
+                    p.appendChild(s);
+                    s.appendChild(todoText);
+                }
+                else if(arr[4] === false)
+                {
+                    p.appendChild(todoText);
+                    let completedBtn = document.createElement("button");
+                    let completedText = document.createTextNode("Complete");
+                    completedBtn.classList.add("btn");
+                    completedBtn.classList.add("btn-success");
+                    completedBtn.classList.add("btn-sm");
+                    completedBtn.setAttribute("onclick","completedTodayTodo(this)");
+                    completedBtn.appendChild(completedText);
+                    div.appendChild(completedBtn);
+                }
+                li.appendChild(p);
+                li.appendChild(div);
+                ulToday.appendChild(li);
+            }
         });
     }    
 }
@@ -178,7 +279,7 @@ function addTodo(date,month,year,todo)
     let tempTodo = [];
     for(let i = 0;i < retrievedTodo.length;i++)
         tempTodo[i] = retrievedTodo[i].slice();
-    tempTodo.push([year,month,date,todo]);
+    tempTodo.push([year,month,date,todo,false]);
     localStorage.removeItem("Todo");
     localStorage.setItem("Todo",JSON.stringify(tempTodo));
     displayTodo();
@@ -194,11 +295,70 @@ function deleteTodo(element)
     let deleteDeadlineDate = deleteDeadline[0];
     let deleteDeadlineMonth = months.indexOf(String(deleteDeadline[1]));
     let deleteDeadlineYear = parseInt(deleteDeadline[2]);
-    let deleteTodoText = element.parentElement.parentElement.childNodes[0].data;
+    let deleteTodoText = element.parentElement.parentElement.childNodes[0].innerText;
     for(let i = 0;i < tempTodo.length;i++)
     {
         if(tempTodo[i][0] == deleteDeadlineYear && tempTodo[i][1] == deleteDeadlineMonth && tempTodo[i][2] == deleteDeadlineDate && tempTodo[i][3] == deleteTodoText)
             tempTodo.splice(i,1);
+    }
+    localStorage.removeItem("Todo");
+    localStorage.setItem("Todo",JSON.stringify(tempTodo));    
+    displayTodo();
+}
+
+function deleteTodayTodo(element)
+{
+    let retrievedTodo = JSON.parse(localStorage.getItem("Todo"));
+    let tempTodo = [];
+    for(let i = 0;i < retrievedTodo.length;i++)
+        tempTodo[i] = retrievedTodo[i].slice();
+    let deleteDeadlineDate = (new Date()).getUTCDate();
+    let deleteDeadlineMonth = (new Date()).getMonth();
+    let deleteDeadlineYear = (new Date()).getFullYear();
+    let deleteTodoText = element.parentElement.parentElement.childNodes[0].innerText;
+    for(let i = 0;i < tempTodo.length;i++)
+    {
+        if(tempTodo[i][0] == deleteDeadlineYear && tempTodo[i][1] == deleteDeadlineMonth && tempTodo[i][2] == deleteDeadlineDate && tempTodo[i][3] == deleteTodoText)
+            tempTodo.splice(i,1);
+    }
+    localStorage.removeItem("Todo");
+    localStorage.setItem("Todo",JSON.stringify(tempTodo));    
+    displayTodo();
+}
+
+function completedTodo(element){
+    let retrievedTodo = JSON.parse(localStorage.getItem("Todo"));
+    let tempTodo = [];
+    for(let i = 0;i < retrievedTodo.length;i++)
+        tempTodo[i] = retrievedTodo[i].slice();
+    let completedDeadline = element.parentElement.children[0].childNodes[0].data.split("/");
+    let completedDeadlineDate = completedDeadline[0];
+    let completedDeadlineMonth = months.indexOf(String(completedDeadline[1]));
+    let completedDeadlineYear = parseInt(completedDeadline[2]);
+    let completedTodoText = element.parentElement.parentElement.childNodes[0].innerText;
+    for(let i = 0;i < tempTodo.length;i++)
+    {
+        if(tempTodo[i][0] == completedDeadlineYear && tempTodo[i][1] == completedDeadlineMonth && tempTodo[i][2] == completedDeadlineDate && tempTodo[i][3] == completedTodoText && tempTodo[i][4] == false)
+            tempTodo[i][4] = true;
+    }
+    localStorage.removeItem("Todo");
+    localStorage.setItem("Todo",JSON.stringify(tempTodo));    
+    displayTodo();
+}
+
+function completedTodayTodo(element){
+    let retrievedTodo = JSON.parse(localStorage.getItem("Todo"));
+    let tempTodo = [];
+    for(let i = 0;i < retrievedTodo.length;i++)
+        tempTodo[i] = retrievedTodo[i].slice();
+    let completedDeadlineDate = (new Date()).getUTCDate();
+    let completedDeadlineMonth = (new Date()).getMonth();
+    let completedDeadlineYear = (new Date()).getFullYear();
+    let completedTodoText = element.parentElement.parentElement.childNodes[0].innerText;
+    for(let i = 0;i < tempTodo.length;i++)
+    {
+        if(tempTodo[i][0] == completedDeadlineYear && tempTodo[i][1] == completedDeadlineMonth && tempTodo[i][2] == completedDeadlineDate && tempTodo[i][3] == completedTodoText && tempTodo[i][4] == false)
+            tempTodo[i][4] = true;
     }
     localStorage.removeItem("Todo");
     localStorage.setItem("Todo",JSON.stringify(tempTodo));    
