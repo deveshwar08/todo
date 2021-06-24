@@ -573,20 +573,21 @@ function addUserIn()
 {
     let username = document.getElementById("username").value;
     let pwd = document.getElementById("pwd").value;
-    let tempUser = new User(username,pwd);
-    console.log(tempUser);
     if(checkUserPwd(username,pwd) == false)
     {
         let usersDef = [];
         if(localStorage.getItem("User") == null)
-            localStorage.setItem("User",(usersDef));
-        let retrievedUsers = (localStorage.getItem("User"));  
+            localStorage.setItem("User",JSON.stringify(usersDef));
+        let retrievedUsers = JSON.parse(localStorage.getItem("User")); 
+        console.log(retrievedUsers); 
         let tempUsers = [];
         for(let i = 0;i < retrievedUsers.length;i++)
             tempUsers[i] = retrievedUsers[i];
+        console.log(tempUsers);
+        let tempUser = new User(username,pwd);
         tempUsers.push(tempUser);
         localStorage.removeItem("User");
-        console.log(retrievedUsers);
+        console.log(tempUsers);
         localStorage.setItem("User",JSON.stringify(tempUsers));
         loginUser();  
     }
