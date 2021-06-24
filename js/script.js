@@ -7,6 +7,16 @@ let digitalDiv = '<div id="time" style="font-family: \'Orbitron\', sans-serif;">
 let analogueDiv = '<div id="analogue-clock"><canvas id="analogue-canvas" width="400px" height="400px"></canvas></div>';
 document.getElementById("clock-area").innerHTML = digitalDiv;
 let defaultTodo = [];
+let isUserLogged = false;
+let currentUserName = "";
+
+class User {
+    constructor(username,pwd){
+        this.username = username;
+        this.pwd = pwd;
+        this.todo = [];
+    } 
+}
 
 function startTime() {
     let today = new Date();
@@ -115,23 +125,34 @@ function checkTodayTodo(){
     let today = new Date();
     let currentMonth = today.getMonth();
     let currentYear = today.getFullYear();
-    let retrievedTodo = JSON.parse(localStorage.getItem("Todo"));
-    let tempTodo = [];
-    let flag = 0;
-    for(let i = 0;i < retrievedTodo.length;i++)
-        tempTodo[i] = retrievedTodo[i].slice();
-    tempTodo.forEach(arr => {
-        if(today.getUTCDate() == parseInt(arr[2]) && currentMonth == arr[1] && currentYear == arr[0])
-            flag++;
-    });
-    if(flag > 0)
-        return true;
+    if(localStorage.getItem("User") != null)
+    {
+        let retrieved = JSON.parse(localStorage.getItem("User"));
+        let temp =  [];
+        let flag = 0;
+        for(let i = 0;i < retrieved.length;i++)
+            temp[i] = retrieved[i];
+        temp.forEach(arr => {
+            if(arr["username"] == currentUserName)
+            {
+                for(let i = 0;i < arr["todo"].length;i++)
+                if(today.getUTCDate() == parseInt(arr["todo"][i][2]) && currentMonth == arr["todo"][i][1] && currentYear == arr["todo"][i][0])
+                    flag++;
+            }
+        });
+        if(flag > 0)
+            return true;
+        else
+            return false;
+    }
     else
         return false;
 }
 
 function displayTodo()
 {
+    document.getElementById("login-signup").innerHTML = "";
+    document.getElementById("login-signup-form").innerHTML = "";
     document.getElementById("todo").innerHTML = "";
     let today = new Date();
     let currentMonth = today.getMonth();
@@ -155,14 +176,19 @@ function displayTodo()
     }
     document.getElementById("todo").appendChild(h3);
     document.getElementById("todo").appendChild(ul);
-    if(localStorage.getItem("Todo") == null)
-        localStorage.setItem("Todo",JSON.stringify(defaultTodo));
+    if(localStorage.getItem("User") == null)
+        localStorage.setItem("User",JSON.stringify(usersDef));
     else{
-        let retrievedTodo = JSON.parse(localStorage.getItem("Todo"));
+        let retrieved = JSON.parse(localStorage.getItem("User"));
+        let temp = [];
         let tempTodo = [];
-        for(let i = 0;i < retrievedTodo.length;i++)
-            tempTodo[i] = retrievedTodo[i].slice();
-        //console.log(tempTodo);
+        for(let i = 0;i < retrieved.length;i++)
+            temp[i] = retrieved[i];
+        temp.forEach(arr => {
+            if(arr["username"] == currentUserName)
+                for(let i = 0;i < arr["todo"].length;i++)
+                    tempTodo[i] = arr["todo"][i];
+        });    
         tempTodo.sort(function(a,b) {
             if(a[0] != b[0])
                 return a[0] - b[0];
@@ -178,7 +204,6 @@ function displayTodo()
             li.classList.add("list-group-item");
             li.classList.add("d-flex");
             li.classList.add("justify-content-between");
-            //li.classList.add("align-items-center");
             let todoText = document.createTextNode(arr[3]);
             let p = document.createElement("p");
             let deadline = arr[2] + "/" + months[arr[1]] + "/" + arr[0];
@@ -227,7 +252,6 @@ function displayTodo()
                 li.classList.add("list-group-item");
                 li.classList.add("d-flex");
                 li.classList.add("justify-content-between");
-                //li.classList.add("align-items-center");
                 let todoText = document.createTextNode(arr[3]);
                 let p = document.createElement("p");
                 let deleteBtn = document.createElement("button");
@@ -275,93 +299,102 @@ function dateClick(element)
 }
 function addTodo(date,month,year,todo)
 {
-    let retrievedTodo = JSON.parse(localStorage.getItem("Todo"));
-    let tempTodo = [];
-    for(let i = 0;i < retrievedTodo.length;i++)
-        tempTodo[i] = retrievedTodo[i].slice();
-    tempTodo.push([year,month,date,todo,false]);
-    localStorage.removeItem("Todo");
-    localStorage.setItem("Todo",JSON.stringify(tempTodo));
+    let retrieved = JSON.parse(localStorage.getItem("User"));
+    let temp = [];
+    for(let i = 0;i < retrieved.length;i++)
+    {
+        temp[i] = retrieved[i];
+    } 
+    temp.forEach(arr =>{
+        if(arr["username"] == currentUserName)
+        {
+            arr["todo"].push([year,month,date,todo,false]);
+        }
+    });
+    localStorage.removeItem("User");
+    localStorage.setItem("User",JSON.stringify(temp));
     displayTodo();
 }
 
 function deleteTodo(element)
-{
-    let retrievedTodo = JSON.parse(localStorage.getItem("Todo"));
-    let tempTodo = [];
-    for(let i = 0;i < retrievedTodo.length;i++)
-        tempTodo[i] = retrievedTodo[i].slice();
+{   
+    let retrieved = JSON.parse(localStorage.getItem("User"));
+    let temp = [];
+    for(let i = 0;i <retrieved.length;i++)
+        temp[i] = retrieved[i];
     let deleteDeadline = element.parentElement.children[0].childNodes[0].data.split("/");
     let deleteDeadlineDate = deleteDeadline[0];
     let deleteDeadlineMonth = months.indexOf(String(deleteDeadline[1]));
     let deleteDeadlineYear = parseInt(deleteDeadline[2]);
     let deleteTodoText = element.parentElement.parentElement.childNodes[0].innerText;
-    for(let i = 0;i < tempTodo.length;i++)
-    {
-        if(tempTodo[i][0] == deleteDeadlineYear && tempTodo[i][1] == deleteDeadlineMonth && tempTodo[i][2] == deleteDeadlineDate && tempTodo[i][3] == deleteTodoText)
-            tempTodo.splice(i,1);
-    }
-    localStorage.removeItem("Todo");
-    localStorage.setItem("Todo",JSON.stringify(tempTodo));    
+    temp.forEach(arr =>{
+        if(arr["username"] == currentUserName)
+            for(let i = 0;i < arr["todo"].length;i++)
+                if(arr["todo"][i][0] == deleteDeadlineYear && arr["todo"][i][1] == deleteDeadlineMonth && arr["todo"][i][2] == deleteDeadlineDate && arr["todo"][i][3] == deleteTodoText)
+                    arr["todo"].splice(i,1);
+    });
+    
+    localStorage.removeItem("User");
+    localStorage.setItem("User",JSON.stringify(temp));
+    
     displayTodo();
 }
 
 function deleteTodayTodo(element)
-{
-    let retrievedTodo = JSON.parse(localStorage.getItem("Todo"));
-    let tempTodo = [];
-    for(let i = 0;i < retrievedTodo.length;i++)
-        tempTodo[i] = retrievedTodo[i].slice();
-    let deleteDeadlineDate = (new Date()).getUTCDate();
-    let deleteDeadlineMonth = (new Date()).getMonth();
-    let deleteDeadlineYear = (new Date()).getFullYear();
+{ 
+    let retrieved = JSON.parse(localStorage.getItem("User"));
+    let temp = [];
+    for(let i = 0;i < retrieved.length;i++)
+        temp[i] = retrieved[i];
     let deleteTodoText = element.parentElement.parentElement.childNodes[0].innerText;
-    for(let i = 0;i < tempTodo.length;i++)
-    {
-        if(tempTodo[i][0] == deleteDeadlineYear && tempTodo[i][1] == deleteDeadlineMonth && tempTodo[i][2] == deleteDeadlineDate && tempTodo[i][3] == deleteTodoText)
-            tempTodo.splice(i,1);
-    }
-    localStorage.removeItem("Todo");
-    localStorage.setItem("Todo",JSON.stringify(tempTodo));    
+    temp.forEach(arr => {
+        if(arr["username"] == currentUserName)
+            for(let i = 0;i < arr["todo"].length;i++)
+                if(arr["todo"][i][0] == (new Date()).getFullYear() && arr["todo"][i][1] == (new Date()).getMonth() && arr["todo"][i][2] == (new Date()).getUTCDate() && arr["todo"][i][3] == deleteTodoText)
+                    arr["todo"].splice(i,1);
+    }); 
+    localStorage.removeItem("User");
+    localStorage.setItem("User",JSON.stringify(temp));
     displayTodo();
 }
 
-function completedTodo(element){
-    let retrievedTodo = JSON.parse(localStorage.getItem("Todo"));
-    let tempTodo = [];
-    for(let i = 0;i < retrievedTodo.length;i++)
-        tempTodo[i] = retrievedTodo[i].slice();
+function completedTodo(element)
+{   
+    let retrieved = JSON.parse(localStorage.getItem("User"));
+    let temp = [];
+    for(let i = 0;i <retrieved.length;i++)
+        temp[i] = retrieved[i];
     let completedDeadline = element.parentElement.children[0].childNodes[0].data.split("/");
     let completedDeadlineDate = completedDeadline[0];
     let completedDeadlineMonth = months.indexOf(String(completedDeadline[1]));
     let completedDeadlineYear = parseInt(completedDeadline[2]);
     let completedTodoText = element.parentElement.parentElement.childNodes[0].innerText;
-    for(let i = 0;i < tempTodo.length;i++)
-    {
-        if(tempTodo[i][0] == completedDeadlineYear && tempTodo[i][1] == completedDeadlineMonth && tempTodo[i][2] == completedDeadlineDate && tempTodo[i][3] == completedTodoText && tempTodo[i][4] == false)
-            tempTodo[i][4] = true;
-    }
-    localStorage.removeItem("Todo");
-    localStorage.setItem("Todo",JSON.stringify(tempTodo));    
+    temp.forEach(arr =>{
+        if(arr["username"] == currentUserName)
+            for(let i = 0;i < arr["todo"].length;i++)
+                if(arr["todo"][i][0] == completedDeadlineYear && arr["todo"][i][1] == completedDeadlineMonth && arr["todo"][i][2] == completedDeadlineDate && arr["todo"][i][3] == completedTodoText)
+                    arr["todo"][i][4] = true;
+    });
+    
+    localStorage.removeItem("User");
+    localStorage.setItem("User",JSON.stringify(temp));
     displayTodo();
 }
 
-function completedTodayTodo(element){
-    let retrievedTodo = JSON.parse(localStorage.getItem("Todo"));
-    let tempTodo = [];
-    for(let i = 0;i < retrievedTodo.length;i++)
-        tempTodo[i] = retrievedTodo[i].slice();
-    let completedDeadlineDate = (new Date()).getUTCDate();
-    let completedDeadlineMonth = (new Date()).getMonth();
-    let completedDeadlineYear = (new Date()).getFullYear();
+function completedTodayTodo(element){ 
+    let retrieved = JSON.parse(localStorage.getItem("User"));
+    let temp = [];
+    for(let i = 0;i < retrieved.length;i++)
+        temp[i] = retrieved[i];
     let completedTodoText = element.parentElement.parentElement.childNodes[0].innerText;
-    for(let i = 0;i < tempTodo.length;i++)
-    {
-        if(tempTodo[i][0] == completedDeadlineYear && tempTodo[i][1] == completedDeadlineMonth && tempTodo[i][2] == completedDeadlineDate && tempTodo[i][3] == completedTodoText && tempTodo[i][4] == false)
-            tempTodo[i][4] = true;
-    }
-    localStorage.removeItem("Todo");
-    localStorage.setItem("Todo",JSON.stringify(tempTodo));    
+    temp.forEach(arr => {
+        if(arr["username"] == currentUserName)
+            for(let i = 0;i < arr["todo"].length;i++)
+                if(arr["todo"][i][0] == (new Date()).getFullYear() && arr["todo"][i][1] == (new Date()).getMonth() && arr["todo"][i][2] == (new Date()).getUTCDate() && arr["todo"][i][3] == completedTodoText)
+                    arr["todo"][i][4] = true;
+    }); 
+    localStorage.removeItem("User");
+    localStorage.setItem("User",JSON.stringify(temp));  
     displayTodo();
 }
 
@@ -428,6 +461,175 @@ function back() {
     currentMonth = (currentMonth === 0) ? 11 : currentMonth - 1;
     displayCalendar(currentMonth, currentYear);
 }
+
+function displayLoginOption()
+{
+    document.getElementById("login-signup").innerHTML = "";
+    let loginBtn = document.createElement("button");
+    let signupBtn = document.createElement("button");
+    let loginText = document.createTextNode("Login");
+    let signupText = document.createTextNode("Sign Up");
+    loginBtn.setAttribute("onclick","loginUser()");
+    signupBtn.setAttribute("onclick","addUser()");
+    loginBtn.appendChild(loginText);
+    signupBtn.appendChild(signupText);
+    loginBtn.classList.add("btn");
+    loginBtn.classList.add("btn-primary");
+    signupBtn.classList.add("btn");
+    signupBtn.classList.add("btn-success");
+    document.getElementById("login-signup").appendChild(loginBtn);
+    document.getElementById("login-signup").appendChild(signupBtn);
+}
+
+function loginUser()
+{
+    let div = document.getElementById("login");
+    document.getElementById("signup").innerHTML = "";
+    document.getElementById("login-signup").innerHTML = "";
+    div.innerHTML = "";
+    let labelUserName = document.createElement("label");
+    let inputUserName = document.createElement("input");
+    let labelPwd = document.createElement("label");
+    let inputPwd = document.createElement("input");
+    let loginBtn = document.createElement("button");
+    let loginText = document.createTextNode("Login");
+    let labelUserNameText = document.createTextNode("User Name");
+    let labelPwdText = document.createTextNode("Password");
+    labelUserName.appendChild(labelUserNameText);
+    labelPwd.appendChild(labelPwdText);
+    labelUserName.setAttribute("for","username");
+    inputUserName.setAttribute("id","username");
+    inputUserName.setAttribute("type","text");
+    inputUserName.setAttribute("name","username");
+    labelPwd.setAttribute("for","pwd");
+    inputPwd.setAttribute("id","pwd");
+    inputPwd.setAttribute("type","password");
+    inputPwd.setAttribute("name","pwd"); 
+    loginBtn.setAttribute("onclick","checkUser()");
+    loginBtn.appendChild(loginText);
+    loginBtn.classList.add("btn");
+    loginBtn.classList.add("btn-primary");
+    div.appendChild(labelUserName);
+    div.appendChild(inputUserName);
+    div.appendChild(labelPwd);
+    div.appendChild(inputPwd);
+    div.appendChild(loginBtn);
+    
+}
+
+function addUser()
+{
+    let div = document.getElementById("signup");
+    document.getElementById("login-signup").innerHTML = "";
+    document.getElementById("login").innerHTML = "";
+    div.innerHTML = "";
+    let labelUserName = document.createElement("label");
+    let inputUserName = document.createElement("input");
+    let labelPwd = document.createElement("label");
+    let inputPwd = document.createElement("input");
+    let signupBtn = document.createElement("button");
+    let signupText = document.createTextNode("Sign Up");
+    let labelUserNameText = document.createTextNode("User Name");
+    let labelPwdText = document.createTextNode("Password");
+    labelUserName.appendChild(labelUserNameText);
+    labelPwd.appendChild(labelPwdText);
+    labelUserName.setAttribute("for","username");
+    inputUserName.setAttribute("id","username");
+    inputUserName.setAttribute("type","text");
+    inputUserName.setAttribute("name","username");
+    labelPwd.setAttribute("for","pwd");
+    inputPwd.setAttribute("id","pwd");
+    inputPwd.setAttribute("type","password");
+    inputPwd.setAttribute("name","pwd"); 
+    signupBtn.setAttribute("onclick","addUserIn()");
+    signupBtn.appendChild(signupText);
+    signupBtn.classList.add("btn");
+    signupBtn.classList.add("btn-success");
+    div.appendChild(labelUserName);
+    div.appendChild(inputUserName);
+    div.appendChild(labelPwd);
+    div.appendChild(inputPwd);
+    div.appendChild(signupBtn);
+}
+
+function checkUser()
+{
+    let username = document.getElementById("username").value;
+    let pwd = document.getElementById("pwd").value;
+    if(checkUserPwd(username,pwd))
+    {
+        currentUserName = username;
+        isUserLogged = true;
+        displayTodo();
+    }
+    else
+    {
+        alert("Wrong Credentials");
+        displayLoginOption();
+    }
+}
+
+function addUserIn()
+{
+    let username = document.getElementById("username").value;
+    let pwd = document.getElementById("pwd").value;
+    let tempUser = new User(username,pwd);
+    console.log(tempUser);
+    if(checkUserPwd(username,pwd) == false)
+    {
+        let usersDef = [];
+        if(localStorage.getItem("User") == null)
+            localStorage.setItem("User",(usersDef));
+        let retrievedUsers = (localStorage.getItem("User"));  
+        let tempUsers = [];
+        for(let i = 0;i < retrievedUsers.length;i++)
+            tempUsers[i] = retrievedUsers[i];
+        tempUsers.push(tempUser);
+        localStorage.removeItem("User");
+        console.log(retrievedUsers);
+        localStorage.setItem("User",JSON.stringify(tempUsers));
+        loginUser();  
+    }
+    else
+    {
+        alert("User Already Exists");   
+        displayLoginOption();
+    } 
+}
+
+function checkUserPwd(username,pwd)
+{
+    if(localStorage.getItem("User") != null)
+    {
+        let flag = 0;
+        let users = JSON.parse(localStorage.getItem("User"));
+        let tempUsers = [];
+        for(let i = 0;i < users.length;i++)
+            tempUsers[i] = users[i];
+        tempUsers.forEach(arr => {
+            //console.log(arr.username);
+            if(arr["username"] == username && arr["pwd"] == pwd)
+                flag++;    
+        });
+
+        if(flag == 1)
+            return true;
+        else 
+            return false;
+        
+    }
+    else
+        return false;
+}
+
+
 startTime();
 displayCalendar(currentMonth, currentYear);
-displayTodo();
+if(isUserLogged == false)
+{
+    displayLoginOption();
+}
+else
+{
+    displayTodo();
+}

@@ -47,8 +47,18 @@ ul {
     margin-top: 5px;
     padding: 10px;
 }
+#login-signup, #login-signup-form {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
 
-
+#login,#signup,form {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
 @media only screen and (max-width: 480px)
 {
     
